@@ -1,0 +1,60 @@
+import React, { useState } from "react";
+import Table from "./Table";
+
+function validateConcurrencyInput(valueStr,balanceValue){ 
+  if(valueStr==="") return 'Amount cannot be empty';
+  const valueNumeric = parseFloat(valueStr);
+  if(valueNumeric < 0.01) return 'Amount cannot be less than $0.01';
+  if(valueNumeric > balanceValue) return 'Amount cannot exceed the available balance';
+  return "";
+}
+
+function Main() {
+ 
+  const _balanceValue=17042.67;
+
+  const [value,setValue] = useState("");
+  const [errorText,setErrorText] = useState("");
+
+  function onInputChange(e){
+    const inputValue = e.target.value;
+    const errorText = validateConcurrencyInput(inputValue,_balanceValue);
+    setErrorText(errorText);
+    setValue(inputValue);
+  }
+
+  return (
+    <div className="layout-column align-items-center mx-auto">
+      <h1>CryptoRank Exchange</h1>
+      <section>
+        <div className="card-text layout-column align-items-center mt-12 px-8 flex text-center">
+          <label>
+            I want to exchange $ 
+            <input 
+              className="w-10" 
+              data-testid="amount-input" 
+              required 
+              type="number" 
+              placeholder="USD" 
+              value={value} 
+              onChange={onInputChange}
+              min={0} 
+              step = "0.01"
+            /> {" "} 
+            of my $
+            <span>{_balanceValue}</span>:
+          </label>
+          {errorText && (
+            <p data-testid="error" className="form-hint error-text mt-3 pl-0 ml-0">
+              {errorText}
+            </p>
+          )}
+          {/* The errors can be Amount cannot be empty /be less than $0.01/exceed the available balance */}
+        </div>
+      </section>
+      <Table value={value} hasError={errorText!==""} />
+    </div>
+  );
+}
+
+export default Main;
